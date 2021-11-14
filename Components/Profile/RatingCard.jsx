@@ -12,18 +12,35 @@ import {RateMyBarApi} from '../../Api/RateMyBarApi';
 import {SwipeListView} from 'react-native-swipe-list-view';
 import {MaterialIcons} from '@expo/vector-icons';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import {useNavigation} from '@react-navigation/native';
 
 const api = new RateMyBarApi();
 
-export default function RatingCard({rating, token, handleDelete, openUser, openRating, openTag, ...props}) {
+export default function RatingCard({rating, token, handleDelete, openUser, openRating, openTag, ratingLink, ...props}) {
     const {colors} = useTheme();
-    const [comments, setComments] = useState(rating.comments);
+    const [comments, setComments] = useState([]);
     const styles = getStyles(colors);
     const {isOpen, onOpen, onClose} = useDisclose();
     const [newComment, setNewComment] = useState('');
     const [showCommentModal, setShowCommentModal] = useState(false);
     const newCommentInputRef = useRef();
     const [postingComment, setPostingComment] = useState(false);
+    const [loading, setLoading] = useState(props.loading || false);
+    const nav = useNavigation();
+
+    useEffect(() => {
+        setLoading(props.loading);
+        if (!props.loading) {
+            rating.comments.forEach((c => {
+                c.disableRightSwipe = true;
+                if (c.userID !== token.id && rating.reviewerID !== token.id) {
+                    c.disableLeftSwipe = true;
+                }
+            }))
+            setComments(rating.comments);
+        }
+    }, [props.loading, rating]);
+
     useEffect(() => {
         setNewComment('');
     }, [showCommentModal]);
@@ -60,8 +77,11 @@ export default function RatingCard({rating, token, handleDelete, openUser, openR
     }
 
     const commentItem = ({item, index}) => (
-        <Box key={index}>
-        <Actionsheet.Item onPress={() => {onClose();openUser(item.userID)}}
+        <Box key={item.commentID}>
+        <Actionsheet.Item onPress={() => {
+            onClose();
+            nav.navigate('User', {userID: item.userID});
+            }}
              bg={colors.muted[50]}
             borderRadius={0}
             borderBottomColor={colors.muted[50]}
@@ -90,9 +110,16 @@ export default function RatingCard({rating, token, handleDelete, openUser, openR
     )
 
     return (
+        <>
+        {!loading ?
         <Box bg={'white'} shadow={0} py={4} style={styles.card} {...props}>
-            <TouchableWithoutFeedback onPress={handleOpenRating}>
-                <Box px={5}>
+            <Box px={5}>
+                <Pressable 
+                    onPress={ratingLink === false ? 
+                    () => nav.navigate('Bar', {barID: rating.barID})
+                    : 
+                    handleOpenRating
+                }>
                     <HStack maxWidth='100%' alignItems='flex-start'>
                         <VStack maxWidth='80%'>
                             <Heading fontSize={17}>{rating.name}</Heading>
@@ -100,23 +127,35 @@ export default function RatingCard({rating, token, handleDelete, openUser, openR
                             <BeerRating mb={3} rating={rating.overallRating}/>
                         </VStack>
                         <Text ml='auto' fontSize={30} fontWeight={300} color={colors.muted[400]}>{parseInt(rating.distance)}<Text fontSize={15} fontWeight={400} color={colors.muted[400]}>mi</Text></Text>
+                </HStack>
+                </Pressable>
+                {!(props.showUser === false) && rating.user &&
+                <Pressable onPress={() => nav.navigate('User', {userID: rating.reviewerID})}>
+                    <HStack alignItems='flex-start' mt={1} mb={1}>
+                        <Text fontWeight="bold" fontSize={15} color={colors.muted[500]}>{rating.user.name}</Text>
+                        <Text ml='auto' color={colors.muted[500]}>{moment(rating.dateReviewed).fromNow()}</Text>
                     </HStack>
-                    <Text mb={3} fontStyle='italic'>"{rating.description}"</Text>
-                </Box>
-            </TouchableWithoutFeedback>
-            {rating.reviewPhotos.length > 0 && <PhotoCarousel data={rating.reviewPhotos} />}
+                </Pressable>
+                }
+                <Pressable
+                    disabled={ratingLink === false} onPress={handleOpenRating}
+                >
+                <Text mb={0} fontStyle='italic'>"{rating.description}"</Text>
+                </Pressable>
+            </Box>
+            {rating.reviewPhotos.length > 0 && <PhotoCarousel mt={3} data={rating.reviewPhotos} />}
             <Box px={5}>
-                <TouchableWithoutFeedback onPress={handleOpenRating}>
+                <Pressable disabled={ratingLink === false} onPress={handleOpenRating}>
                     <CategoryRatings mt={3} mb={2} categoryRatings={rating.categoryRatings}/>
-                </TouchableWithoutFeedback>
+                </Pressable>
                 <Wrap direction="row">
                     {rating.tags.map((tag, index) => (
                         <Button key={index} style={styles.tag} my={1} mr={2} onPress={() => openTag(tag.tag)}>{tag.tag}</Button>
                     ))}
                 </Wrap>
-                <TouchableOpacity style={{marginTop: 20, marginLeft: 5}} onPress={onOpen}>
+                <Pressable style={{marginTop: 20, marginLeft: 5}} onPress={onOpen}>
                     <Text ml='auto' fontSize={15} color={colors.muted[500]}>{comments.length} comment{comments.length !== 1 && 's'}</Text>
-                </TouchableOpacity>
+                </Pressable>
             </Box>
             <Actionsheet isOpen={isOpen} onClose={onClose}>
                 <Actionsheet.Content style={{minHeight: 500}}>
@@ -163,6 +202,10 @@ export default function RatingCard({rating, token, handleDelete, openUser, openR
                 </Modal.Content>
             </Modal>
         </Box>
+        :
+        <></>
+        }
+        </>
     )
 }
 

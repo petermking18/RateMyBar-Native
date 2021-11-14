@@ -47,12 +47,12 @@ export default function Feed(props) {
             >
                 <Tab.Screen name="Following">
                     {(props) => (
-                        <Following {...props} radius={radius} sortBy={sortBy} token={feedProps.token} location={feedProps.location}/>
+                        <Following {...props} radius={radius} sortBy={sortBy} token={feedProps.token} parentNav={nav} location={feedProps.location}/>
                     )}
                 </Tab.Screen>
                 <Tab.Screen name="Nearby">
                     {(props) => (
-                        <Nearby {...props} radius={radius} sortBy={sortBy} token={feedProps.token} location={feedProps.location}/>
+                        <Nearby {...props} radius={radius} sortBy={sortBy} token={feedProps.token} parentNav={nav} location={feedProps.location}/>
                     )}
                 </Tab.Screen>
             </Tab.Navigator>

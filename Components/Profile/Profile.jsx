@@ -81,6 +81,10 @@ export default function Profile(props) {
         loadInitial();
     }, []);
 
+    const handleDeletedRating = (ratingID) => {
+        setReviews(reviews.filter(r => r.reviewID !== ratingID));
+    }
+
     return (
         <SafeAreaView style={{flex: 1}}>
             <ScrollView refreshControl={
@@ -148,7 +152,12 @@ export default function Profile(props) {
                 <View style={{paddingLeft: 0, paddingRight: 0}}>
                     {reviews.map((rating, index) => (
                         <RatingCard rating={rating} key={index} 
-                            token={props.token} openRating={ratingID => props.navigation.navigate('Rating', {ratingID})} 
+                            token={props.token} openRating={ratingID => props.navigation.navigate('Rating', {
+                                ratingID: ratingID,
+                                onDeleted: (ratingID) => handleDeletedRating(ratingID),
+                                token: props.token,
+                                location: props.location,
+                             })} 
                             openTag={tag => props.navigation.navigate('Tag', {tag})}
                             openUser={userID => props.navigation.navigate('User', {userID})}
                             marginBottom={5}/>

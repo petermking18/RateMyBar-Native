@@ -2,10 +2,11 @@ import React, {useState, useEffect, useRef} from 'react';
 import {RefreshControl, SafeAreaView} from 'react-native';
 import {Text, useTheme, TouchableOpacity, Box, Button, ScrollView, View, Center, Spinner} from 'native-base';
 import {RateMyBarApi} from '../../Api/RateMyBarApi';
+import RatingCard from '../Profile/RatingCard';
 
 const api = new RateMyBarApi();
 
-export default function Following({radius, sortBy, token, location, ...props}) {
+export default function Following({radius, sortBy, token, location, parentNav, ...props}) {
     const {colors} = useTheme();
     const [ratings, setRatings] = useState([]);
     const [page, setPage] = useState(0);
@@ -21,15 +22,15 @@ export default function Following({radius, sortBy, token, location, ...props}) {
     }
 
     const loadInitial = () => {
-        _scrollView.current.scrollTo({y: 0, animated: true});
         setLoading(true);
         setPage(0);
         api.feed.getFeed(token.id, token.token, location.lat, location.lng, 'Following', sortBy, radius, 0, pageSize)
         .then(response => {
             setRatings(response.reviews);
-            setLoading(false);
+            _scrollView.current.scrollTo({y: 0, animated: true});
             setNoMore(response.reviews.length === 0);
             setRefreshing(false);
+            setLoading(false);
         })
     }
     const loadMore = () => {
@@ -51,7 +52,7 @@ export default function Following({radius, sortBy, token, location, ...props}) {
     }, [radius, sortBy]);
 
     return (
-        <SafeAreaView {...props} style={{backgroundColor: colors.muted[200]}}>
+        <SafeAreaView {...props} style={{backgroundColor: colors.muted[200], height: '100%'}}>
             <ScrollView ref={_scrollView}
                 refreshControl={
                     <RefreshControl
@@ -74,10 +75,24 @@ export default function Following({radius, sortBy, token, location, ...props}) {
                 style={{backgroundColor: colors.muted[200]}}
                 scrollEventThrottle={1000}
             >
-                <Text>{JSON.stringify(ratings, null, 2)}</Text>
-                <Text>{ratings.length}</Text>
+                <Box h={5}></Box>
+                {ratings.map((rating, index) => (
+                    <RatingCard rating={rating} key={index}
+                        token={token} openRating={ratingID => parentNav.navigate('Rating', {
+                            ratingID: ratingID,
+                            onDeleted: (ratingID) => {},
+                            token: token,
+                            location: location
+                        })}
+                        openTag={tag => parentNav.navigate('Tag', {tag})}
+                        openUser={userID => parentNav.navigate('User', {userID})}
+                        marginBottom={5}
+                    />
+                ))}
+                {/* <Text>{JSON.stringify(ratings, null, 2)}</Text> */}
+                {/* <Text>{ratings.length}</Text> */}
                 {loading && <Spinner/>}
-                {noMore && <Text textAlign='center' color={colors.muted[500]} fontSize={15} mt={5}>All results loaded.</Text>}
+                {noMore && <Text textAlign='center' color={colors.muted[500]} fontSize={15} mt={0}>All results loaded.</Text>}
             </ScrollView>
         </SafeAreaView>
     )

@@ -27,7 +27,7 @@ export default class PhotoCarousel extends Component {
 
     render() {
         return (
-            <View>
+            <View {...this.props}>
                 <Carousel
                     ref={(c) => this.carousel = c}
                     data={this.props.data}
