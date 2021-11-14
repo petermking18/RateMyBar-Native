@@ -75,7 +75,7 @@ export default function Following({radius, sortBy, token, location, parentNav, .
                 style={{backgroundColor: colors.muted[200]}}
                 scrollEventThrottle={1000}
             >
-                <Box h={5}></Box>
+                <Box h={3}></Box>
                 {ratings.map((rating, index) => (
                     <RatingCard rating={rating} key={index}
                         token={token} openRating={ratingID => parentNav.navigate('Rating', {

@@ -80,7 +80,7 @@ export default function RatingCard({rating, token, handleDelete, openUser, openR
         <Box key={item.commentID}>
         <Actionsheet.Item onPress={() => {
             onClose();
-            nav.navigate('User', {userID: item.userID});
+            openUser(item.userID);
             }}
              bg={colors.muted[50]}
             borderRadius={0}
@@ -130,7 +130,7 @@ export default function RatingCard({rating, token, handleDelete, openUser, openR
                 </HStack>
                 </Pressable>
                 {!(props.showUser === false) && rating.user &&
-                <Pressable onPress={() => nav.navigate('User', {userID: rating.reviewerID})}>
+                <Pressable onPress={() => openUser(rating.reviewerID)}>
                     <HStack alignItems='flex-start' mt={1} mb={1}>
                         <Text fontWeight="bold" fontSize={15} color={colors.muted[500]}>{rating.user.name}</Text>
                         <Text ml='auto' color={colors.muted[500]}>{moment(rating.dateReviewed).fromNow()}</Text>

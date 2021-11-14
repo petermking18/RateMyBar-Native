@@ -20,6 +20,9 @@ import User from "./Components/User/User";
 import Rating from "./Components/Rating/Rating";
 import Tag from "./Components/Tag/Tag";
 import Bar from "./Components/Bar/Bar";
+import Search from "./Components/Search/Search";
+import Activity from "./Components/Activity/Activity";
+import FollowRequests from "./Components/Activity/FollowRequests";
 import LocationView from "./Components/LocationView";
 import { createStackNavigator } from "@react-navigation/stack";
 import { default as logo } from "./assets/logo.png";
@@ -36,6 +39,13 @@ export default function App() {
   const [token, setToken] = useState(null);
   const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [viewIsActivity, setViewIsActivity] = useState(false);
+
+  const onNewNotification = (notification) => {
+    if (!viewIsActivity) {
+      //show notification here
+    }
+  };
 
   useEffect(async () => {
     const tokenString = await SecureStore.getItemAsync("currentUser");
@@ -119,7 +129,15 @@ export default function App() {
       ) : token ? (
         location ? (
           <NavigationContainer>
-            <AppStack.Navigator initialRouteName="Main">
+            <AppStack.Navigator
+              initialRouteName="Main"
+              screenListeners={{
+                state: (e) => {
+                  setViewIsActivity(
+                    e.data.state.routeNames[e.data.state.index] === "Activity"
+                  );
+                },
+              }}>
               <AppStack.Screen
                 name="Main"
                 options={{ title: "Main", headerShown: false }}>
@@ -163,9 +181,24 @@ export default function App() {
                         />
                       )}
                     </Drawers.Screen>
+                    <Drawers.Screen name="Search">
+                      {(props) => (
+                        <Search {...props} token={token} location={location} />
+                      )}
+                    </Drawers.Screen>
                     <Drawers.Screen name="Profile">
                       {(props) => (
                         <Profile {...props} location={location} token={token} />
+                      )}
+                    </Drawers.Screen>
+                    <Drawers.Screen name="Activity">
+                      {(props) => (
+                        <Activity
+                          {...props}
+                          location={location}
+                          token={token}
+                          onNewNotification={onNewNotification}
+                        />
                       )}
                     </Drawers.Screen>
                   </Drawers.Navigator>
@@ -220,6 +253,16 @@ export default function App() {
                   <Bar {...props} location={location} token={token} />
                 )}
               </AppStack.Screen>
+              <AppStack.Screen
+                options={{
+                  title: "Follow Requests",
+                  headerStyle: styles.headerStyle,
+                  headerBackTitleVisible: false,
+                  headerTintColor: "white",
+                }}
+                name="Follow Requests"
+                component={FollowRequests}
+              />
             </AppStack.Navigator>
           </NavigationContainer>
         ) : (

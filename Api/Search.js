@@ -1,6 +1,9 @@
 import axios from "axios";
 
 export default class Search {
+  constructor(baseUrl) {
+    axios.defaults.baseURL = baseUrl;
+  }
   async search(userID, authToken, search) {
     return new Promise((resolve, reject) => {
       axios

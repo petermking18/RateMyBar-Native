@@ -1,6 +1,9 @@
 import axios from "axios";
 
 export default class Feed {
+  constructor(baseUrl) {
+    axios.defaults.baseURL = baseUrl;
+  }
   async getFeed(
     userID,
     authToken,

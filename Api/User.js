@@ -1,6 +1,9 @@
 import axios from "axios";
 
 export default class User {
+  constructor(baseUrl) {
+    axios.defaults.baseURL = baseUrl;
+  }
   async get(otherUserID, userID, authToken, lat, lng, page, pageSize) {
     return new Promise((resolve, reject) => {
       axios

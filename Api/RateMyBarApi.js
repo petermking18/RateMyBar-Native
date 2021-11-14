@@ -16,9 +16,9 @@ export class RateMyBarApi {
   auth = new Auth(baseUrl);
   bars = new Bars(baseUrl);
   profile = new Profile(baseUrl);
-  user = new User();
-  activity = new Activity();
+  user = new User(baseUrl);
+  activity = new Activity(baseUrl);
   ratings = new Ratings(baseUrl);
-  feed = new Feed();
-  search = new Search();
+  feed = new Feed(baseUrl);
+  search = new Search(baseUrl);
 }

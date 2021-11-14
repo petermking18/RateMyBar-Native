@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react';
 import {Dimensions, StyleSheet} from 'react-native';
-import {Text, useTheme, Button, Popover, Slider, HStack, Box, Select} from 'native-base';
+import {Text, useTheme, Button, Popover, Slider, HStack, Box, Select, View} from 'native-base';
 import {MaterialIcons} from '@expo/vector-icons';
 
 export default function FeedConfigurations({radius, setRadius, sortBy, setSortBy, view}) {
