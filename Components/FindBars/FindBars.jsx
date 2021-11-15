@@ -41,7 +41,7 @@ export default function FindBars(props) {
         0, pageSize).then(response => {
             setBars(response.bars);
             _scrollView.current.scrollTo({y: 0, animated: true});
-            setApiKey(response.apiKey);
+            // setApiKey(response.apiKey);
             setLoading(false);
             setRefreshing(false);
             setNoMore(response.bars.length === 0);
@@ -127,7 +127,7 @@ export default function FindBars(props) {
                 )}
                 </Tab.Screen>
                 <Tab.Screen name='Map view'>
-                    {props => <FindBarsMap {...props} token={token} location={location}/>}
+                    {props => <FindBarsMap {...props} token={token} location={location} openBar={barID => nav.navigate('Bar', {barID})} />}
                 </Tab.Screen>
             </Tab.Navigator>
         </NavigationContainer>
