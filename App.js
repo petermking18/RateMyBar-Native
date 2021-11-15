@@ -33,7 +33,7 @@ import {
   DrawerItem,
 } from "@react-navigation/drawer";
 import * as SecureStore from "expo-secure-store";
-import { FontAwesome5 } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 
 export default function App() {
   const [token, setToken] = useState(null);
@@ -79,7 +79,6 @@ export default function App() {
     setToken(null);
   };
 
-  //const { location, setLocation } = useCurrentLocation();
   const AppStack = createStackNavigator();
   const Drawers = createDrawerNavigator();
 
@@ -224,6 +223,14 @@ export default function App() {
                   headerBackTitleVisible: false,
                   headerTintColor: "white",
                   presentation: "modal",
+                  headerBackImage: () => (
+                    <MaterialIcons
+                      color="white"
+                      size={35}
+                      style={{ marginLeft: 10 }}
+                      name="expand-more"
+                    />
+                  ),
                 }}>
                 {(props) => (
                   <Rating {...props} location={location} token={token} />

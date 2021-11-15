@@ -86,7 +86,7 @@ export default function Profile(props) {
     }
 
     return (
-        <SafeAreaView style={{flex: 1}}>
+        <View style={{flex: 1, backgroundColor: colors.muted[200]}}>
             <ScrollView refreshControl={
                 <RefreshControl
                 refreshing={refreshing}
@@ -163,9 +163,11 @@ export default function Profile(props) {
                             marginBottom={5}/>
                     ))}
                 </View>
-                <Box p={5} ref={r => loadMoreRef = r}>{loading && <Spinner/>}</Box>
+                {loading &&<Box p={5} ref={r => loadMoreRef = r}><Spinner/></Box>}
+                {noMore && <Text textAlign='center' color={colors.muted[500]} fontSize={15} mt={0}>All results loaded.</Text>}
+                <Box h={7}></Box>
             </ScrollView>
-        </SafeAreaView>
+        </View>
     )
 }
 

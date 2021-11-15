@@ -15,11 +15,11 @@ export default function CategoryRatings({categoryRatings, ...props}) {
     return (
         <Box {...props}>
         {crs && crs.map((cr, index) => (
-            <Box key={index} w='100%'>
-                <Text color={colors.muted[500]}>{cr.ratingCategory}</Text>
+            <Box key={index} w='100%' mb={3}>
+                <Text color={colors.muted[500]} mb={1}>{cr.ratingCategory}: {cr.ratingDescription}</Text>
                 <Box flexDirection='row' justifyContent='space-between' alignItems='center'>
-                    <Progress w='70%' colorScheme='rmb' bg={colors.muted[200]} size='md' value={cr.rating/.05}/>
-                    <Text ml='auto' color={colors.muted[500]}>{cr.ratingDescription}</Text>
+                    <Progress w='100%' colorScheme='rmb' bg={colors.muted[200]} size='md' value={cr.rating/.05}/>
+                    {/* <Text ml='auto' w='25%' textAlign='center' color={colors.muted[500]}>{cr.ratingDescription}</Text> */}
                 </Box>
                 {/* {cr.comment && cr.comment.length > 0 && <Text color={colors.muted[400]} fontStyle='italic'>"{cr.comment}"</Text>} */}
             </Box>

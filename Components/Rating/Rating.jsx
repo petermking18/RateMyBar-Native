@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {RefreshControl, SafeAreaView, TouchableOpacity, StyleSheet, Alert} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import {Text, Button, useTheme, ScrollView, Box, Icon, Pressable, HStack} from 'native-base';
+import {Text, Button, View, useTheme, ScrollView, Box, Skeleton, Icon, Pressable, HStack} from 'native-base';
 import {RateMyBarApi} from '../../Api/RateMyBarApi';
 import RatingMenu from './RatingMenu';
 import RatingCard from '../Profile/RatingCard';
@@ -66,7 +66,7 @@ export default function Rating(props) {
     }, []);
 
     return (
-        <SafeAreaView>
+        <View>
             <ScrollView
                 refreshControl={
                     <RefreshControl
@@ -80,18 +80,24 @@ export default function Rating(props) {
                         tintColor={colors.primary[500]}
                     />
                 }
+                h='100%'
             >
-                {!loading &&
-                <>
+                {!loading ?
                 <RatingCard rating={rating} token={props.token} 
                     openTag={(tag) => nav.navigate('Tag', {tag})}
+                    openUser={userID => nav.navigate('User', {userID})}
                     loading={loading} ratingLink={false}
                 />
-                <Text mt={500}>{JSON.stringify(rating, null, 2)}</Text>
-                </>
+                :
+                <Box p={5} bg='white'>
+                    <Skeleton w={150} h={5} mb={1}/>
+                    <Skeleton w={175} h={5} mb={1}/>
+                    <Skeleton w={200} h={5} mb={1}/>
+                    <Skeleton w={215} h={5} mb={1}/>
+                </Box>
                 }
             </ScrollView>
-        </SafeAreaView>
+        </View>
     )
 }
 

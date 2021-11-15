@@ -52,7 +52,7 @@ export default function Nearby({radius, sortBy, token, location, parentNav, ...p
     }, [radius, sortBy]);
 
     return (
-        <SafeAreaView {...props} style={{backgroundColor: colors.muted[200], height: '100%'}}>
+        <View {...props} style={{backgroundColor: colors.muted[200], height: '100%'}}>
             <ScrollView
                 ref={_scrollView}
                 refreshControl={
@@ -94,7 +94,8 @@ export default function Nearby({radius, sortBy, token, location, parentNav, ...p
                 {/* <Text>{ratings.length}</Text> */}
                 {loading && <Spinner/>}
                 {noMore && <Text textAlign='center' color={colors.muted[500]} fontSize={15} mt={0}>All results loaded.</Text>}
+                <Box h={7}></Box>
             </ScrollView>
-        </SafeAreaView>
+        </View>
     )
 }

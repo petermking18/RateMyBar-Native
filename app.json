@@ -17,7 +17,10 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "config": {
+        "googleMapsApiKey": "AIzaSyBsaD5GJs_T4kK1HeYPKDIQToV-FpZDHSY"
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -27,6 +30,9 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "serverIP": "http://192.168.1.73:3050"
     }
   }
 }
