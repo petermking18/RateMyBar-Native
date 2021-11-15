@@ -36,6 +36,21 @@ export default function Search({token, location}) {
     return (
         <SafeAreaView>
             <Input ref={_inputRef} autoFocus={true} fontSize={20} 
+                onSubmitEditing={() => {
+                    if(results.length > 0) {
+                        switch(results[0].parentType) {
+                            case 'Tag':
+                                    nav.navigate('Tag', {tag: results[0].parentID})
+                                    break;
+                                case 'User':
+                                    nav.navigate('User', {userID: results[0].parentID})
+                                    break;
+                                case 'Bar':
+                                    nav.navigate('Bar', {barID: results[0].parentID})
+                                    break;
+                        }
+                    }
+                }}
                 placeholder='Search...' returnKeyType='done' 
                 value={text} onChangeText={text => handleText(text)}
                 variant='underlined' px={5} h={12} bg='white'

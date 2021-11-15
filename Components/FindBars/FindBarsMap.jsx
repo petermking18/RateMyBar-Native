@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from 'react';
-import {Dimensions} from 'react-native';
+import React, {useState, useEffect, useRef} from 'react';
+import {Dimensions, StyleSheet} from 'react-native';
 import {Text, useTheme, View, Box, Button} from 'native-base';
 import {MaterialIcons} from '@expo/vector-icons';
 import {RateMyBarApi} from '../../Api/RateMyBarApi';
@@ -13,18 +13,14 @@ const api = new RateMyBarApi();
 export default function FindBarsMap({token, location, openBar}) {
     const {colors} = useTheme();
     const [bars, setBars] = useState([]);
+    const DELTA = 0.1;
+    let _map = useRef();
     const initialRegion = {
         latitude: location.lat,
         longitude: location.lng,
-        latitudeDelta: 0.1,
-        longitudeDelta: 0.1
+        latitudeDelta: DELTA,
+        longitudeDelta: DELTA
     }
-    const [region, setRegion] = useState({
-        latitude: location.lat,
-        longitude: location.lng,
-        latitudeDelta: 0.1,
-        longitudeDelta: 0.1
-    });
 
     const onRegionChange = (newRegion) => {
         const radius = calcDistance(newRegion.latitude, newRegion.longitude, newRegion.latitude + newRegion.latitudeDelta, newRegion.longitude + newRegion.longitudeDelta);
@@ -54,17 +50,25 @@ export default function FindBarsMap({token, location, openBar}) {
     
     return (
         <View style={{flex: 1, backgroundColor: colors.muted[200], alignItems: 'center', justifyContent: 'center'}}>
-            <MapView showsUserLocation 
-                style={{width: Dimensions.get('window').width, height: Dimensions.get('window').height}}
+            <MapView showsUserLocation ref={_map}
+                style={{width: Dimensions.get('window').width, height: Dimensions.get('window').height}} style={{...StyleSheet.absoluteFillObject}}
                 initialRegion={initialRegion} onRegionChangeComplete={onRegionChange} customMapStyle={mapStyle} provider={PROVIDER_GOOGLE}
             >
             {bars.map((bar, index) => (
                 <Marker key={index} coordinate={{latitude: bar.lat, longitude: bar.lng}} image={logo} onPress={() => {
-                    setRegion({
-                        latitude: bar.lat,
-                        longitude: bar.lng,
-                        ...region
-                    })
+                    _map.current.fitToCoordinates([
+                        {latitude: bar.lat, longitude: bar.lng},
+                        {latitude: bar.lat - DELTA/3, longitude: bar.lng - DELTA/3},
+                        {latitude: bar.lat + DELTA/3, longitude: bar.lng + DELTA/3},
+                    ], {
+                        edgePadding: {
+                            top: 0,
+                            right: 0,
+                            bottom: 0,
+                            left: 0
+                        },
+                        animated: true
+                    });
                 }}>
                     <Callout onPress={() => openBar(bar.barID)}>
                         <Text fontSize={20}>{bar.name}</Text>
@@ -75,15 +79,23 @@ export default function FindBarsMap({token, location, openBar}) {
             ))}
             {/* <Marker coordinate={{latitude: location.lat, longitude: location.lng}}/> */}
             </MapView>
-            {/* <Button onPress={() => setRegion({
-                latitude: location.lat,
-                longitude: location.lng,
-                ...region
+            <Button onPress={() => _map.current.fitToCoordinates([
+                {latitude: location.lat, longitude: location.lng},
+                {latitude: location.lat - DELTA/3, longitude: location.lng - DELTA/3},
+                {latitude: location.lat + DELTA/3, longitude: location.lng + DELTA/3}
+            ], {
+                edgePadding: {
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                    left: 0
+                },
+                animated: true
             })}
             style={{position: 'absolute', bottom: 20, right: 20}}
             >
             <MaterialIcons size={30} color='white' name='my-location'/>
-            </Button> */}
+            </Button>
         </View>
     )
 }

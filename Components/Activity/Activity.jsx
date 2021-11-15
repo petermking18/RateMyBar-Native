@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from 'react';
-import {SafeAreaView, TouchableOpacity, StyleSheet, Alert} from 'react-native';
+import React, {useState, useEffect, useRef} from 'react';
+import {SafeAreaView, TouchableOpacity, StyleSheet, Alert, RefreshControl} from 'react-native';
 import {Box, Text, Button, useTheme, Badge, Pressable, Icon, HStack} from 'native-base';
 import {useNavigation} from '@react-navigation/native';
 import {RateMyBarApi} from '../../Api/RateMyBarApi';
@@ -13,6 +13,9 @@ export default function ActivityPane({token, location}) {
     const {colors} = useTheme();
     const [followRequests, setFollowRequests] = useState([]);
     const [notifications, setNotifications] = useState([]);
+    const [refreshing, setRefreshing] = useState(false);
+    let _swipeList = useRef();
+    const _keyExtractor = (item, index) => item.notificationID.toString();
     const nav = useNavigation();
 
     const updateCount = () => {
@@ -31,6 +34,7 @@ export default function ActivityPane({token, location}) {
     }
 
     const load = () => {
+        return new Promise((resolve, reject) => {
         api.activity.get(token.id, token.token).then(response => {
             setFollowRequests(response.followRequests);
             response.notifications.forEach(n => {
@@ -38,6 +42,9 @@ export default function ActivityPane({token, location}) {
             })
             setNotifications(response.notifications);
             updateCount();
+            setRefreshing(false);
+            resolve(response.followRequests);
+        })
         })
     }
 
@@ -110,7 +117,11 @@ export default function ActivityPane({token, location}) {
         <HStack flex={1} pl={2} key={data.item.key}>
             <Pressable px={4} bg={colors.muted[400]}
                 ml='auto'
-                justifyContent='center' onPress={() => handleDeleteNotification(data.item)}
+                justifyContent='center' onPress={
+                    () => {
+                    rowMap[data.item.notificationID].closeRow();
+                    handleDeleteNotification(data.item);
+                }}
                 _pressed={{opacity: 0.5}}
             >
                 <Icon as={<MaterialIcons name='close'/>} color='white'/>
@@ -123,22 +134,36 @@ export default function ActivityPane({token, location}) {
             <TouchableOpacity style={{backgroundColor: 'white', padding: 20, borderBottomColor: colors.muted[200], borderBottomWidth: 1}} onPress={() => nav.navigate('Follow Requests', {
                     followRequests: followRequests,
                     onAccept: handleAcceptFollowRequest,
-                    onDecline: handleDeclineFollowRequest
+                    onDecline: handleDeclineFollowRequest,
+                    update: load
                 })} >
                 <HStack alignItems='center'>
                     <Text fontSize={17} >Follow Requests {followRequests.length > 0 && '(' + followRequests.length + ')'}</Text>
                     <MaterialIcons name='chevron-right' style={{marginLeft: 'auto', fontSize: 20}}/>
                 </HStack>
             </TouchableOpacity>
-            <SwipeListView data={notifications}
+            <SwipeListView 
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={
+                            () => {
+                                setRefreshing(true);
+                                load();
+                            }
+                        }
+                        tintColor={colors.primary[500]}
+                    />
+                }
+                ref={_swipeList}
+                data={notifications}
                 showsVerticalScrollIndicator={false}
                 style={{marginTop: 10, height: '90%'}}
                 renderItem={notificationItem}
                 renderHiddenItem={deleteNotificationItem}
-                rightOpenValue={-65}
-                previewRowKey={'0'}
-                previewOpenValue={-40}
-                previewOpenDelay={3000}   
+                rightOpenValue={-65}  
+                closeOnRowOpen={true}
+                keyExtractor={_keyExtractor}
             />
         </SafeAreaView>
     )

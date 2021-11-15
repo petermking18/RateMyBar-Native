@@ -32,7 +32,7 @@
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "serverIP": "http://192.168.1.73:3050"
+      "serverIP": "http://13.59.72.172:3050"
     }
   }
 }

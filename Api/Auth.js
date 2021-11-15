@@ -6,6 +6,7 @@ export default class Auth {
   }
   async register(newUser) {
     return new Promise((resolve, reject) => {
+      newUser.deviceType = "Mobile";
       axios.post("/api/auth/register", newUser).then((response) => {
         if (response.data.code == 200) {
           resolve(response.data.result);
@@ -21,6 +22,7 @@ export default class Auth {
         .post("/api/auth/login", {
           username: username,
           password: password,
+          deviceType: "Mobile",
         })
         .then((response) => {
           if (response.data.code == 200) {
@@ -37,7 +39,7 @@ export default class Auth {
   async logout(userToken) {
     return new Promise((resolve, reject) => {
       axios
-        .post("/api/auth/logout", userToken)
+        .post("/api/auth/logout", { user: userToken, deviceType: "Mobile" })
         .then(() => {
           resolve();
         })

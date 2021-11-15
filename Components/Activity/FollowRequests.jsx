@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {SafeAreaView, TouchableOpacity, Alert} from 'react-native';
+import {SafeAreaView, TouchableOpacity, Alert, RefreshControl} from 'react-native';
 import {Box, Image, Text, useTheme, HStack, VStack, ScrollView} from 'native-base';
 import {useNavigation} from '@react-navigation/native';
 import moment from 'moment';
@@ -7,6 +7,7 @@ import moment from 'moment';
 export default function FollowRequests(props) {
     const {colors} = useTheme();
     const [followRequests, setFollowRequests] = useState(props.route.params.followRequests);
+    const [refreshing, setRefreshing] = useState(false);
 
     useEffect(() => {
         setFollowRequests(props.route.params.followRequests);
@@ -40,7 +41,23 @@ export default function FollowRequests(props) {
 
     return (
         <SafeAreaView>
-            <ScrollView h='100%'>
+            <ScrollView h='100%'
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={
+                            async () => {
+                                setRefreshing(true);
+                                props.route.params.update().then((followRequests) => {
+                                    setFollowRequests(followRequests);
+                                    setRefreshing(false);
+                                })
+                            }
+                        }
+                        tintColor={colors.primary[500]}
+                    />
+                }
+            >
                 {followRequests.map((request, index) => (
                     <TouchableOpacity style={{padding: 15, backgroundColor: 'white', borderBottomColor: colors.muted[200], borderBottomWidth: 1}}
                         key={index}
@@ -57,6 +74,7 @@ export default function FollowRequests(props) {
                         {/* <Text>{JSON.stringify(request, null, 2)}</Text> */}
                     </TouchableOpacity>
                 ))}
+                {followRequests.length === 0 && <Text mt={5} textAlign='center' color={colors.muted[500]}>No follow requests.</Text>}
             </ScrollView>
         </SafeAreaView>
     )
