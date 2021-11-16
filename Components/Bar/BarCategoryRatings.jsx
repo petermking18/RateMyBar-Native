@@ -2,6 +2,8 @@ import React, {useEffect, useState} from 'react';
 import {View, Box, useTheme, Progress, Text} from 'native-base';
 
 export default function BarCategoryRatings({categoryRatings, ...props}) {
+    if (!categoryRatings) return <></>
+
     let zeros = JSON.parse(JSON.stringify(categoryRatings));
     zeros.forEach((cr) => cr.averageCategoryRating = 0);
     const [crs, setCrs] = useState(zeros);

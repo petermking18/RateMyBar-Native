@@ -1,16 +1,17 @@
 import React, {useState, useEffect, useRef} from 'react';
-import {Dimensions, StyleSheet} from 'react-native';
+import {Dimensions, StyleSheet, Image} from 'react-native';
 import {Text, useTheme, View, Box, Button} from 'native-base';
 import {MaterialIcons} from '@expo/vector-icons';
 import {RateMyBarApi} from '../../Api/RateMyBarApi';
 import MapView, {PROVIDER_GOOGLE, Marker, Callout} from 'react-native-maps';
 import { color } from 'styled-system';
-import {default as logo} from '../../assets/logo-100.png';
+import {default as logo} from '../../assets/logo-25.png';
 import BarCategoryRatings from '../Bar/BarCategoryRatings';
 
 const api = new RateMyBarApi();
 
 export default function FindBarsMap({token, location, openBar}) {
+    const vw = Dimensions.get('window').width;
     const {colors} = useTheme();
     const [bars, setBars] = useState([]);
     const DELTA = 0.1;
@@ -21,6 +22,7 @@ export default function FindBarsMap({token, location, openBar}) {
         latitudeDelta: DELTA,
         longitudeDelta: DELTA
     }
+    // const [openingCallout, setOpeningCallout] = useState(false);
 
     const onRegionChange = (newRegion) => {
         const radius = calcDistance(newRegion.latitude, newRegion.longitude, newRegion.latitude + newRegion.latitudeDelta, newRegion.longitude + newRegion.longitudeDelta);
@@ -39,6 +41,7 @@ export default function FindBarsMap({token, location, openBar}) {
     }
 
     const barIsUnrated = (bar) => {
+        if (!bar || !bar.avgCategoryRatings) return true;
         let unrated = true;
         bar.avgCategoryRatings.forEach(cr => {
             if (cr.averageCategoryRating > 0) {
@@ -55,14 +58,17 @@ export default function FindBarsMap({token, location, openBar}) {
                 initialRegion={initialRegion} onRegionChangeComplete={onRegionChange} customMapStyle={mapStyle} provider={PROVIDER_GOOGLE}
             >
             {bars.map((bar, index) => (
-                <Marker key={index} coordinate={{latitude: bar.lat, longitude: bar.lng}} image={logo} onPress={() => {
+                <Marker key={index} 
+                ref={r => bars[index] = r}
+                coordinate={{latitude: bar.lat, longitude: bar.lng}}
+                onPress={() => {
                     _map.current.fitToCoordinates([
                         {latitude: bar.lat, longitude: bar.lng},
                         {latitude: bar.lat - DELTA/3, longitude: bar.lng - DELTA/3},
                         {latitude: bar.lat + DELTA/3, longitude: bar.lng + DELTA/3},
                     ], {
                         edgePadding: {
-                            top: 0,
+                            top: 100,
                             right: 0,
                             bottom: 0,
                             left: 0
@@ -70,7 +76,8 @@ export default function FindBarsMap({token, location, openBar}) {
                         animated: true
                     });
                 }}>
-                    <Callout onPress={() => openBar(bar.barID)}>
+                    <Image source={require('../../assets/logo-100.png')} style={{width: 40, height: 40}}/>
+                    <Callout onPress={() => openBar(bar.barID)} style={{width: vw*.75}}>
                         <Text fontSize={20}>{bar.name}</Text>
                         <BarCategoryRatings categoryRatings={bar.avgCategoryRatings}/>
                         {barIsUnrated(bar) && <Text textAlign='center' color={colors.muted[500]}>This bar has not been rated yet.</Text>}
@@ -79,19 +86,21 @@ export default function FindBarsMap({token, location, openBar}) {
             ))}
             {/* <Marker coordinate={{latitude: location.lat, longitude: location.lng}}/> */}
             </MapView>
-            <Button onPress={() => _map.current.fitToCoordinates([
-                {latitude: location.lat, longitude: location.lng},
-                {latitude: location.lat - DELTA/3, longitude: location.lng - DELTA/3},
-                {latitude: location.lat + DELTA/3, longitude: location.lng + DELTA/3}
-            ], {
-                edgePadding: {
-                    top: 0,
-                    right: 0,
-                    bottom: 0,
-                    left: 0
-                },
-                animated: true
-            })}
+            <Button onPress={() => {_map.current.fitToCoordinates([
+                    {latitude: location.lat, longitude: location.lng},
+                    {latitude: location.lat - DELTA/3, longitude: location.lng - DELTA/3},
+                    {latitude: location.lat + DELTA/3, longitude: location.lng + DELTA/3}
+                ], {
+                    edgePadding: {
+                        top: 0,
+                        right: 0,
+                        bottom: 0,
+                        left: 0
+                    },
+                    animated: true
+                })
+                bars.forEach(b => b.hideCallout());    
+            }}
             style={{position: 'absolute', bottom: 20, right: 20}}
             >
             <MaterialIcons size={30} color='white' name='my-location'/>
