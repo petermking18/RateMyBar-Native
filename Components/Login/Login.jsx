@@ -11,7 +11,7 @@ import moment from 'moment';
 const api = new RateMyBarApi();
 const LoginStack = createStackNavigator();
 
-export default function Login({setToken}) {
+export default function Login({setToken, expoPushToken}) {
     const styles = getStyles(useTheme());
     const {colors} = useTheme();
     const [username, setUsername] = useState('');
@@ -27,7 +27,7 @@ export default function Login({setToken}) {
     }
 
     const handleLogin = () => {
-        api.auth.login(username, password)
+        api.auth.login(username, password, expoPushToken)
         .then(user => {
             const userToken = new UserToken(user.userID, user.username, user.name, user.school, user.email, user.AuthToken);
             setToken(userToken);

@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "native",
-    "slug": "native",
+    "name": "RateMyBar",
+    "slug": "RateMyBar",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -20,7 +20,9 @@
       "supportsTablet": true,
       "config": {
         "googleMapsApiKey": "AIzaSyBsaD5GJs_T4kK1HeYPKDIQToV-FpZDHSY"
-      }
+      },
+      "bundleIdentifier": "com.peterkingdev.ratemybar",
+      "buildNumber": "1.0.0"
     },
     "android": {
       "adaptiveIcon": {
@@ -32,7 +34,7 @@
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "serverIP": "http://13.59.72.172:3050"
+      "serverIP": "http://192.168.1.73:3050/"
     }
   }
 }

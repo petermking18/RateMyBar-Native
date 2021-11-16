@@ -27,6 +27,7 @@ export default function RatingCard({rating, token, handleDelete, openUser, openR
     const [postingComment, setPostingComment] = useState(false);
     const [loading, setLoading] = useState(props.loading || false);
     const nav = useNavigation();
+    const _keyExtractor = (item, index) => item.commentID.toString();
 
     useEffect(() => {
         setLoading(props.loading);
@@ -102,7 +103,10 @@ export default function RatingCard({rating, token, handleDelete, openUser, openR
         <HStack flex={1} pl={2} key={data.item.key}>
         <Pressable px={4} bg={colors.red[500]}
             ml='auto'
-            justifyContent='center' onPress={() => handleDeleteComment(data.item)}
+            justifyContent='center' onPress={() => {
+                rowMap[data.item.commentID].closeRow();
+                handleDeleteComment(data.item);
+            }}
             _pressed={{opacity: 0.5}}>
             <Icon as={<MaterialIcons name='delete'/>} color='white'/>
         </Pressable>
@@ -166,9 +170,9 @@ export default function RatingCard({rating, token, handleDelete, openUser, openR
                             renderItem={commentItem}
                             renderHiddenItem={deleteCommentItem}
                             rightOpenValue={-65}
-                            previewRowKey={'0'}
-                            previewOpenValue={-40}
-                            previewOpenDelay={3000}   
+                            closeOnRowOpen={true}
+                            showsVerticalScrollIndicator={false}
+                            keyExtractor={_keyExtractor}
                         />
                         {/* {comments.map((comment, index) => (
                             <Actionsheet.Item key={index} onPress={() => {onClose();openUser(comment.userID)}}>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { StyleSheet, Text, View, SafeAreaView } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import {
@@ -9,6 +9,7 @@ import {
   Box,
   Icon,
   TouchableOpacity,
+  Platform,
 } from "native-base";
 import useCurrentLocation from "./useCurrentLocation";
 import * as Location from "expo-location";
@@ -24,6 +25,7 @@ import Search from "./Components/Search/Search";
 import Activity from "./Components/Activity/Activity";
 import FollowRequests from "./Components/Activity/FollowRequests";
 import LocationView from "./Components/LocationView";
+import { RateMyBarApi } from "./Api/RateMyBarApi";
 import { createStackNavigator } from "@react-navigation/stack";
 import { default as logo } from "./assets/logo.png";
 import {
@@ -34,12 +36,31 @@ import {
 } from "@react-navigation/drawer";
 import * as SecureStore from "expo-secure-store";
 import { MaterialIcons } from "@expo/vector-icons";
+import Constants from "expo-constants";
+import * as Notifications from "expo-notifications";
+import AppLoading from "expo-app-loading";
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
+
+const api = new RateMyBarApi();
 
 export default function App() {
   const [token, setToken] = useState(null);
   const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [viewIsActivity, setViewIsActivity] = useState(false);
+
+  const [expoPushToken, setExpoPushToken] = useState("");
+  const [notification, setNotification] = useState(false);
+  const notificationListener = useRef();
+  const responseListener = useRef();
+  const _navRef = useRef();
 
   const onNewNotification = (notification) => {
     if (!viewIsActivity) {
@@ -68,7 +89,67 @@ export default function App() {
     } else {
       setLoading(false);
     }
+
+    // Register for push notifications
+    registerForPushNotificationsAsync().then((token) =>
+      setExpoPushToken(token)
+    );
+
+    // when notification received in foreground
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener(async (notification) => {
+        handleNotificationReceived(notification);
+        // alert("received");
+      });
+
+    // when user taps a notification in foreground, background, or app is closed
+    responseListener.current =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        handleNotificationInteraction(notification);
+        // alert("responded");
+      });
+
+    return () => {
+      Notifications.removeNotificationSubscription(
+        notificationListener.current
+      );
+      Notifications.removeNotificationSubscription(responseListener.current);
+    };
   }, []);
+
+  const handleNotificationReceived = async (notification) => {};
+
+  const handleNotificationInteraction = async (response) => {
+    _navRef.current.navigate("Activity");
+  };
+
+  const decrementBadgeCount = async () => {
+    const badgeCount = await Notifications.getBadgeCountAsync();
+    Notifications.setBadgeCountAsync(badgeCount - 1);
+  };
+
+  async function registerForPushNotificationsAsync() {
+    let token;
+    if (Constants.isDevice) {
+      const { status: existingStatus } =
+        await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+      if (existingStatus !== "granted") {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+      if (finalStatus !== "granted") {
+        // user said no to notifications
+        return;
+      }
+      token = (await Notifications.getExpoPushTokenAsync()).data;
+      //alert(token);
+    } else {
+      // must be on emulator
+    }
+
+    return token;
+  }
 
   const saveToken = async (userToken) => {
     await SecureStore.setItemAsync("currentUser", JSON.stringify(userToken));
@@ -104,7 +185,11 @@ export default function App() {
           label="Logout"
           labelStyle={{ fontSize: 20 }}
           activeTintColor={theme.colors.primary["500"]}
-          onPress={() => clearToken()}
+          onPress={() =>
+            api.auth.logout(token).then(() => {
+              clearToken();
+            })
+          }
         />
       </DrawerContentScrollView>
     );
@@ -113,21 +198,22 @@ export default function App() {
   return (
     <NativeBaseProvider theme={theme}>
       {loading ? (
-        <SafeAreaView
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100%",
-          }}>
-          <HStack alignItems="flex-end" justifyContent="center" space={2}>
-            <Image source={logo} alt="Logo" size="xs" resizeMode="contain" />
-            <Text style={{ fontSize: 30, fontWeight: "500" }}>RateMyBar</Text>
-          </HStack>
-        </SafeAreaView>
+        // <SafeAreaView
+        //   style={{
+        //     flex: 1,
+        //     justifyContent: "center",
+        //     alignItems: "center",
+        //     height: "100%",
+        //   }}>
+        //   <HStack alignItems="flex-end" justifyContent="center" space={2}>
+        //     <Image source={logo} alt="Logo" size="xs" resizeMode="contain" />
+        //     <Text style={{ fontSize: 30, fontWeight: "500" }}>RateMyBar</Text>
+        //   </HStack>
+        // </SafeAreaView>
+        <AppLoading />
       ) : token ? (
         location ? (
-          <NavigationContainer>
+          <NavigationContainer ref={_navRef}>
             <AppStack.Navigator
               initialRouteName="Main"
               screenListeners={{
@@ -196,6 +282,7 @@ export default function App() {
                           {...props}
                           location={location}
                           token={token}
+                          decrementBadgeCount={decrementBadgeCount}
                           onNewNotification={onNewNotification}
                         />
                       )}
@@ -261,22 +348,27 @@ export default function App() {
                 )}
               </AppStack.Screen>
               <AppStack.Screen
+                name="Follow Requests"
                 options={{
                   title: "Follow Requests",
                   headerStyle: styles.headerStyle,
                   headerBackTitleVisible: false,
                   headerTintColor: "white",
-                }}
-                name="Follow Requests"
-                component={FollowRequests}
-              />
+                }}>
+                {(props) => (
+                  <FollowRequests
+                    {...props}
+                    decrementBadgeCount={decrementBadgeCount}
+                  />
+                )}
+              </AppStack.Screen>
             </AppStack.Navigator>
           </NavigationContainer>
         ) : (
           <LocationView setLocation={setLocation} />
         )
       ) : (
-        <Login setToken={saveToken} />
+        <Login setToken={saveToken} expoPushToken={expoPushToken} />
       )}
     </NativeBaseProvider>
   );

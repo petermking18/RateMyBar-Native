@@ -14,6 +14,7 @@ export default function FollowRequests(props) {
     }, [props.route.params.followRequests])
 
     const handlePress = (request) => {
+        props.decrementBadgeCount();
         Alert.alert(
             "Follow request",
             `${request.name} has requested to follow you`,

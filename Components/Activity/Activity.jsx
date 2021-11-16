@@ -6,10 +6,11 @@ import {RateMyBarApi} from '../../Api/RateMyBarApi';
 import {MaterialIcons} from '@expo/vector-icons';
 import {SwipeListView} from 'react-native-swipe-list-view';
 import moment from 'moment';
+import Notifications from 'expo-notifications';
 
 const api = new RateMyBarApi();
 
-export default function ActivityPane({token, location}) {
+export default function ActivityPane({token, location, decrementBadgeCount}) {
     const {colors} = useTheme();
     const [followRequests, setFollowRequests] = useState([]);
     const [notifications, setNotifications] = useState([]);
@@ -18,7 +19,22 @@ export default function ActivityPane({token, location}) {
     const _keyExtractor = (item, index) => item.notificationID.toString();
     const nav = useNavigation();
 
-    const updateCount = () => {
+    // const updateCount = () => {
+    //     let count = 0;
+    //     notifications.forEach(n => {
+    //         if (n.seen === 0) {
+    //             count += 1;
+    //         }
+    //     })
+    //     count += followRequests.length;
+    //     let newTitle = 'Activity'
+    //     if (count > 0) {
+    //         newTitle = newTitle + ' (' + count + ')';
+    //     }
+    //     nav.setOptions({title: newTitle, headerTitle: 'Activity'});
+    // }
+
+    useEffect(() => {
         let count = 0;
         notifications.forEach(n => {
             if (n.seen === 0) {
@@ -31,7 +47,7 @@ export default function ActivityPane({token, location}) {
             newTitle = newTitle + ' (' + count + ')';
         }
         nav.setOptions({title: newTitle, headerTitle: 'Activity'});
-    }
+    }, [notifications, followRequests]);
 
     const load = () => {
         return new Promise((resolve, reject) => {
@@ -41,7 +57,7 @@ export default function ActivityPane({token, location}) {
                 n.disableRightSwipe = true;
             })
             setNotifications(response.notifications);
-            updateCount();
+            //updateCount();
             setRefreshing(false);
             resolve(response.followRequests);
         })
@@ -52,21 +68,22 @@ export default function ActivityPane({token, location}) {
         api.activity.approveFollowRequest(request.friendID, token.id, token.token).then(response => {
             setFollowRequests(response.followRequests);
             setNotifications(response.notifications);
-            updateCount();
+            //updateCount();
         })
     }
     const handleDeclineFollowRequest = (request) => {
         api.activity.declineFollowRequest(request.friendID, token.id, token.token).then(response => {
             setFollowRequests(response.followRequests);
             setNotifications(response.notifications);
-            updateCount();
+            //updateCount();
         })
     }
 
     const handleNotificationPress = (notification) => {
-        api.activity.markNotificationSeen(notification.notificationID, token.id, token.token).then(response => {
+        api.activity.markNotificationSeen(notification.notificationID, token.id, token.token).then((response) => {
             setNotifications(response.notifications);
-            updateCount();
+            decrementBadgeCount();
+            //updateCount();
         })
         Alert.alert(
             "Notification",
@@ -74,6 +91,19 @@ export default function ActivityPane({token, location}) {
             [
                 {
                     text: 'Dismiss'
+                },
+                {
+                    text: 'View',
+                    onPress: () => {
+                        switch (notification.linkType) {
+                            case 'Rating': 
+                                nav.navigate('Rating', {ratingID: notification.linkID});
+                                break;
+                            case 'User':
+                                nav.navigate('User', {userID: notification.linkID});
+                                break;
+                        }
+                    }
                 }
             ]
         )
@@ -81,7 +111,8 @@ export default function ActivityPane({token, location}) {
     const handleDeleteNotification = (notification) => {
         api.activity.deleteNotification(notification.notificationID, token.id, token.token).then(response => {
             setNotifications(response.notifications);
-            updateCount();
+            decrementBadgeCount();
+            //updateCount();
         })
     }
 

@@ -16,13 +16,14 @@ export default class Auth {
       });
     });
   }
-  async login(username, password) {
+  async login(username, password, expoPushToken) {
     return new Promise((resolve, reject) => {
       axios
         .post("/api/auth/login", {
           username: username,
           password: password,
           deviceType: "Mobile",
+          expoPushToken: expoPushToken,
         })
         .then((response) => {
           if (response.data.code == 200) {

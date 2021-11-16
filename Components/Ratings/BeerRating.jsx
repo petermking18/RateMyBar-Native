@@ -27,13 +27,13 @@ export default function BeerRating({rating, ...props}) {
     return (
         <HStack {...props} space={1}>
             {Array(Math.floor(rating)).fill(null).map((mug, index) => (
-                <Image key={index} source={full} size={5} alt='Mug'/>
+                <Image key={index} source={full} size={5} alt='★'/>
             ))}
             {rating - floor != 0 && 
-                <Image source={getPartial()} size={5} alt='Mug'/>
+                <Image source={getPartial()} size={5} alt='☆'/>
             }
             {Array(5-Math.ceil(rating)).fill(null).map((mug, index) => (
-                <Image key={index} source={empty} size={5} alt='Mug'/>
+                <Image key={index} source={empty} size={5} alt='☆'/>
             ))}
             {/* <Image source={half} size={7}/> */}
         </HStack>
