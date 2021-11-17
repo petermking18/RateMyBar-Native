@@ -3,6 +3,7 @@ import {RefreshControl, SafeAreaView} from 'react-native';
 import {Text, useTheme, TouchableOpacity, Box, Button, ScrollView, View, Center, Spinner} from 'native-base';
 import {RateMyBarApi} from '../../Api/RateMyBarApi';
 import RatingCard from '../Profile/RatingCard';
+import NewRatingButton from '../Ratings/NewRatingButton';
 
 const api = new RateMyBarApi();
 
@@ -14,6 +15,8 @@ export default function Following({radius, sortBy, token, location, parentNav, .
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [noMore, setNoMore] = useState(false);
+    const [scrollOffset, setScrollOffset] = useState(0);
+    const [showNewRatingButton, setShowNewRatingButton] = useState(true);
     let _scrollView = useRef();
 
     const shouldLoadMore = ({layoutMeasurement, contentOffset, contentSize}) => {
@@ -71,6 +74,25 @@ export default function Following({radius, sortBy, token, location, parentNav, .
                         loadMore();
                     }
                 }}
+                onScrollToTop={() => {
+                    setShowNewRatingButton(true);
+                }}
+                onScrollBeginDrag={({nativeEvent}) => {
+                    if(nativeEvent.contentOffset.y > scrollOffset) {
+                        setShowNewRatingButton(false);
+                    } else {
+                        setShowNewRatingButton(true);
+                    }
+                    setScrollOffset(nativeEvent.contentOffset.y);
+                }}
+                onMomentumScrollBegin={({nativeEvent}) => {
+                    if(nativeEvent.contentOffset.y > scrollOffset) {
+                        setShowNewRatingButton(false);
+                    } else {
+                        setShowNewRatingButton(true);
+                    }
+                    setScrollOffset(nativeEvent.contentOffset.y);
+                }}
                 showsVerticalScrollIndicator={false}
                 style={{backgroundColor: colors.muted[200]}}
                 scrollEventThrottle={1000}
@@ -95,6 +117,7 @@ export default function Following({radius, sortBy, token, location, parentNav, .
                 {noMore && <Text textAlign='center' color={colors.muted[500]} fontSize={15} mt={0}>All results loaded.</Text>}
                 <Box h={7}></Box>
             </ScrollView>
+            <NewRatingButton show={showNewRatingButton} go={() => parentNav.navigate('New Rating')} />
         </View>
     )
 }

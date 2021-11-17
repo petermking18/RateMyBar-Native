@@ -83,11 +83,14 @@ export default function Rating(props) {
                 h='100%'
             >
                 {!loading ?
+                !error ?
                 <RatingCard rating={rating} token={props.token} 
                     openTag={(tag) => nav.navigate('Tag', {tag})}
                     openUser={userID => nav.navigate('User', {userID})}
                     loading={loading} ratingLink={false}
                 />
+                :
+                <Box p={10}><Text color={colors.muted[500]} textAlign='center'>{error}</Text></Box>
                 :
                 <Box p={5} bg='white'>
                     <Skeleton w={150} h={5} mb={1}/>
@@ -96,6 +99,7 @@ export default function Rating(props) {
                     <Skeleton w={215} h={5} mb={1}/>
                 </Box>
                 }
+                <Box h={10}></Box>
             </ScrollView>
         </View>
     )

@@ -8,6 +8,7 @@ import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs
 import FindBarsConfigurations from './FindBarsConfigruations';
 import BarCard from '../Bar/BarCard';
 import FindBarsMap from './FindBarsMap';
+import NewRatingButton from '../Ratings/NewRatingButton';
 
 const api = new RateMyBarApi();
 const Tab = createMaterialTopTabNavigator();
@@ -26,6 +27,8 @@ export default function FindBars(props) {
     const [noMore, setNoMore] = useState(false);
     const [apiKey, setApiKey] = useState(null);
     const [view, setView] = useState('List view');
+    const [scrollOffset, setScrollOffset] = useState(0);
+    const [showNewRatingButton, setShowNewRatingButton] = useState(true);
     const nav = useNavigation();
     let _scrollView = useRef();
 
@@ -111,6 +114,25 @@ export default function FindBars(props) {
                                 loadMore();
                             }
                         }}
+                        onScrollToTop={() => {
+                            setShowNewRatingButton(true);
+                        }}
+                        onScrollBeginDrag={({nativeEvent}) => {
+                            if(nativeEvent.contentOffset.y > scrollOffset) {
+                                setShowNewRatingButton(false);
+                            } else {
+                                setShowNewRatingButton(true);
+                            }
+                            setScrollOffset(nativeEvent.contentOffset.y);
+                        }}
+                        onMomentumScrollBegin={({nativeEvent}) => {
+                            if(nativeEvent.contentOffset.y > scrollOffset) {
+                                setShowNewRatingButton(false);
+                            } else {
+                                setShowNewRatingButton(true);
+                            }
+                            setScrollOffset(nativeEvent.contentOffset.y);
+                        }}
                         showsVerticalScrollIndicator={false}
                         style={{backgroundColor: colors.muted[200]}}
                         scrollEventThrottle={1000}
@@ -123,11 +145,12 @@ export default function FindBars(props) {
                         {noMore && <Text textAlign='center' color={colors.muted[500]} fontSize={15} mt={0}>All results loaded.</Text>}
                         <Box h={7}></Box>
                     </ScrollView>
+                    <NewRatingButton show={showNewRatingButton} go={() => nav.navigate('New Rating')}/>
                     </View>
                 )}
                 </Tab.Screen>
                 <Tab.Screen name='Map view'>
-                    {props => <FindBarsMap {...props} token={token} location={location} openBar={barID => nav.navigate('Bar', {barID})} />}
+                    {props => <FindBarsMap {...props} view={view} token={token} location={location} openBar={barID => nav.navigate('Bar', {barID})} />}
                 </Tab.Screen>
             </Tab.Navigator>
         </NavigationContainer>

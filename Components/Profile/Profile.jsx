@@ -6,6 +6,7 @@ import {RateMyBarApi} from '../../Api/RateMyBarApi';
 import {default as avatar} from '../../assets/avatar-placeholder.png';
 import * as ImagePicker from 'expo-image-picker';
 import RatingCard from './RatingCard';
+import NewRatingButton from '../Ratings/NewRatingButton';
 
 const api = new RateMyBarApi();
 
@@ -24,6 +25,8 @@ export default function Profile(props) {
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(5);
     const [noMore, setNoMore] = useState(false);
+    const [scrollOffset, setScrollOffset] = useState(0);
+    const [showNewRatingButton, setShowNewRatingButton] = useState(true);
 
     const shouldLoadMore = ({layoutMeasurement, contentOffset, contentSize}) => {
         const paddingToBottom = 20;
@@ -103,6 +106,25 @@ export default function Profile(props) {
                     loadMore();
                 }
             }}
+            onScrollToTop={() => {
+                setShowNewRatingButton(true);
+            }}
+            onScrollBeginDrag={({nativeEvent}) => {
+                if(nativeEvent.contentOffset.y > scrollOffset) {
+                    setShowNewRatingButton(false);
+                } else {
+                    setShowNewRatingButton(true);
+                }
+                setScrollOffset(nativeEvent.contentOffset.y);
+            }}
+            onMomentumScrollBegin={({nativeEvent}) => {
+                if(nativeEvent.contentOffset.y > scrollOffset) {
+                    setShowNewRatingButton(false);
+                } else {
+                    setShowNewRatingButton(true);
+                }
+                setScrollOffset(nativeEvent.contentOffset.y);
+            }}
             showsVerticalScrollIndicator={false}
             style={{paddingLeft: 0, paddingRight: 0, backgroundColor: colors.muted[200]}}
             scrollEventThrottle={400}>
@@ -167,6 +189,7 @@ export default function Profile(props) {
                 {noMore && <Text textAlign='center' color={colors.muted[500]} fontSize={15} mt={0}>All results loaded.</Text>}
                 <Box h={7}></Box>
             </ScrollView>
+            <NewRatingButton show={showNewRatingButton} go={() => props.navigation.navigate('New Rating')}/>
         </View>
     )
 }

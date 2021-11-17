@@ -111,7 +111,9 @@ export default function ActivityPane({token, location, decrementBadgeCount}) {
     const handleDeleteNotification = (notification) => {
         api.activity.deleteNotification(notification.notificationID, token.id, token.token).then(response => {
             setNotifications(response.notifications);
-            decrementBadgeCount();
+            if (notification.seen === 0) {
+                decrementBadgeCount();
+            }
             //updateCount();
         })
     }

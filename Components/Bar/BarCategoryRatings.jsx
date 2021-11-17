@@ -10,7 +10,8 @@ export default function BarCategoryRatings({categoryRatings, ...props}) {
     const [crBackup, setCrBackup] = useState(categoryRatings);
 
     useEffect(() => {
-        setTimeout(() => {setCrs(crBackup)},1);
+        const unsubscribe = setTimeout(() => {setCrs(crBackup)},1);
+        return unsubscribe;
     }, []);
     const {colors} = useTheme();
 

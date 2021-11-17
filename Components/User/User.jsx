@@ -6,7 +6,7 @@ import FollowView from '../FollowTray/FollowView';
 import RatingCard from '../Profile/RatingCard';
 import {useNavigation} from '@react-navigation/native';
 import {MaterialIcons} from '@expo/vector-icons';
-
+import NewRatingButton from '../Ratings/NewRatingButton';
 
 const api = new RateMyBarApi();
 
@@ -26,6 +26,8 @@ export default function User(props) {
     const [page, setPage] = useState(0);
     const pageSize = 5;
     const [noMore, setNoMore] = useState(false);
+    const [scrollOffset, setScrollOffset] = useState(0);
+    const [showNewRatingButton, setShowNewRatingButton] = useState(true);
 
     const shouldLoadMore = ({layoutMeasurement, contentOffset, contentSize}) => {
         const paddingToBottom = 20;
@@ -135,6 +137,25 @@ export default function User(props) {
                         loadMore();
                     }
                 }}
+                onScrollToTop={() => {
+                    setShowNewRatingButton(true);
+                }}
+                onScrollBeginDrag={({nativeEvent}) => {
+                    if(nativeEvent.contentOffset.y > scrollOffset) {
+                        setShowNewRatingButton(false);
+                    } else {
+                        setShowNewRatingButton(true);
+                    }
+                    setScrollOffset(nativeEvent.contentOffset.y);
+                }}
+                onMomentumScrollBegin={({nativeEvent}) => {
+                    if(nativeEvent.contentOffset.y > scrollOffset) {
+                        setShowNewRatingButton(false);
+                    } else {
+                        setShowNewRatingButton(true);
+                    }
+                    setScrollOffset(nativeEvent.contentOffset.y);
+                }}
                 showsVerticalScrollIndicator={false}
                 bg={colors.muted[200]}
                 scrollEventThrottle={400}
@@ -203,6 +224,7 @@ export default function User(props) {
                 <Box p={5}><Text textAlign='center' alignItems='center' fontSize={16} color={colors.muted[500]}><MaterialIcons name='lock'/> This user is private.</Text></Box>
                 }
             </ScrollView>
+            <NewRatingButton show={showNewRatingButton} go={() => nav.navigate('New Rating')}/>
         </View>
     )
 }

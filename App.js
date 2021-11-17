@@ -39,6 +39,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
 import AppLoading from "expo-app-loading";
+import NewRating from "./Components/Ratings/NewRating";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -360,6 +361,18 @@ export default function App() {
                     {...props}
                     decrementBadgeCount={decrementBadgeCount}
                   />
+                )}
+              </AppStack.Screen>
+              <AppStack.Screen
+                name="New Rating"
+                options={{
+                  title: "New Rating",
+                  headerStyle: styles.headerStyle,
+                  headerBackTitleVisible: false,
+                  headerTintColor: "white",
+                }}>
+                {(props) => (
+                  <NewRating {...props} token={token} location={location} />
                 )}
               </AppStack.Screen>
             </AppStack.Navigator>

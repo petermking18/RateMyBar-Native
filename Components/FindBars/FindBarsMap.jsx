@@ -4,13 +4,14 @@ import {Text, useTheme, View, Box, Button} from 'native-base';
 import {MaterialIcons} from '@expo/vector-icons';
 import {RateMyBarApi} from '../../Api/RateMyBarApi';
 import MapView, {PROVIDER_GOOGLE, Marker, Callout} from 'react-native-maps';
+import {useNavigation} from '@react-navigation/native';
 import { color } from 'styled-system';
 import {default as logo} from '../../assets/logo-25.png';
 import BarCategoryRatings from '../Bar/BarCategoryRatings';
 
 const api = new RateMyBarApi();
 
-export default function FindBarsMap({token, location, openBar}) {
+export default function FindBarsMap({token, location, view, openBar}) {
     const vw = Dimensions.get('window').width;
     const {colors} = useTheme();
     const [bars, setBars] = useState([]);
@@ -28,7 +29,7 @@ export default function FindBarsMap({token, location, openBar}) {
         const radius = calcDistance(newRegion.latitude, newRegion.longitude, newRegion.latitude + newRegion.latitudeDelta, newRegion.longitude + newRegion.longitudeDelta);
         api.bars.getFindBarsPage(token.id, token.token, 'Nearby', radius, newRegion.latitude, newRegion.longitude, 0, 100)
         .then(response => {
-            setBars(response.bars);
+          setBars(response.bars);
         })
     }
     const calcDistance = (lat1, lat2, lng1, lng2) => {
@@ -50,6 +51,12 @@ export default function FindBarsMap({token, location, openBar}) {
         })
         return unrated;
     }
+
+    useEffect(() => {
+      if (view === 'Map view') {
+        onRegionChange(initialRegion);
+      }
+    }, [view]);
     
     return (
         <View style={{flex: 1, backgroundColor: colors.muted[200], alignItems: 'center', justifyContent: 'center'}}>
@@ -86,6 +93,7 @@ export default function FindBarsMap({token, location, openBar}) {
             ))}
             {/* <Marker coordinate={{latitude: location.lat, longitude: location.lng}}/> */}
             </MapView>
+            <Box style={{position: 'absolute', left: 0, height: '100%', width: 40}}></Box>
             <Button onPress={() => {_map.current.fitToCoordinates([
                     {latitude: location.lat, longitude: location.lng},
                     {latitude: location.lat - DELTA/3, longitude: location.lng - DELTA/3},

@@ -11,6 +11,36 @@ export default class Bars {
   constructor(baseURL) {
     axios.defaults.baseURL = baseURL;
   }
+  async newRatingAutocomplete(
+    text,
+    lat,
+    lng,
+    radiusMiles,
+    userID,
+    authToken,
+    sessionToken
+  ) {
+    return new Promise((resolve, reject) => {
+      axios
+        .post("/api/bars/barAndPlaceAutocomplete", {
+          text,
+          lat,
+          lng,
+          radiusMiles,
+          userID,
+          authToken,
+          sessionToken,
+        })
+        .then((response) => {
+          resolve(response.data);
+        })
+        .catch((err) => {
+          alert(err);
+          reject(err);
+        });
+    });
+  }
+
   async getCoordinates(address) {
     return new Promise((resolve, reject) => {
       axios
