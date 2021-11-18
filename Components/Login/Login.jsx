@@ -215,7 +215,7 @@ function RegisterForm({handleRegister, ...props}) {
         <SafeAreaView style={styles.outer} {...props}>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1, padding: 40, flexDirection: 'column', justifyContent: 'center'}} keyboardVerticalOffset={120}>
-                    <ScrollView>
+                    <ScrollView showsVerticalScrollIndicator={false}>
                         <Heading fontSize={30} mb={2}>Create Account</Heading>
                         <VStack p={0} flex='1' justify-content='flex-end'>
                             <Input style={styles.input} ref={r => usernameRef = r} variant='underlined' value={username} placeholder='Username' type='username' returnKeyType='next' onSubmitEditing={() => {nameRef.focus()}} onChangeText={text => setUsername(text)}/>

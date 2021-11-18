@@ -1,16 +1,19 @@
 import React, {useState, useEffect} from 'react';
-import {View, Text, Slider, Button, Box, useTheme, Select, HStack, VStack, Wrap, CloseIcon, ArrowForwardIcon, ArrowBackIcon} from 'native-base';
+import {View, Text, Slider, Button, Input, Box, useTheme, Select, HStack, VStack, Wrap, CloseIcon, ArrowForwardIcon, ArrowBackIcon} from 'native-base';
 import {MaterialIcons} from '@expo/vector-icons';
 import { back } from 'react-native/Libraries/Animated/Easing';
 
-export default function NewRatingCategoryRatings({categories, ratings, back}) {
+export default function NewRatingCategoryRatings({categories, ratings, back, next}) {
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [unselectedCategories, setUnselectedCategories] = useState([]);
     const {colors} = useTheme();
 
     useEffect(() => {
-        if(ratings) {
-
+        if(ratings.length > 0) {
+            let unselected = categories.filter(c => !ratings.some(r => r.ratingCategoryID === c.ratingCategoryID));
+            unselected.forEach(c => c.comment = '');
+            setSelectedCategories(ratings);
+            setUnselectedCategories(unselected);
         } else {
             categories.forEach((category) => {
                 category.comment = '';
@@ -41,10 +44,19 @@ export default function NewRatingCategoryRatings({categories, ratings, back}) {
         setSelectedCategories(categories);
     }
     const handleCommentChange = (category, value) => {
-        let categories = selectedCategories;
-        let index = categories.indexOf(category);
+        let categories = JSON.parse(JSON.stringify(selectedCategories));
+        let index = 0;
+        for (let i = 0; i < categories.length; i++) {
+            if (categories[i].ratingCategoryID === category.ratingCategoryID) {
+                index = i;
+            }
+        }
         categories[index].comment = value;
         setSelectedCategories(categories);
+        // let categories = selectedCategories;
+        // let index = categories.indexOf(category);
+        // categories[index].comment = value;
+        // setSelectedCategories(categories);
     }
     const nextDisabled = () => {
         return selectedCategories.some(c => !c.rating);
@@ -53,7 +65,7 @@ export default function NewRatingCategoryRatings({categories, ratings, back}) {
     return (
         <View bg='white' shadow={0}>
             {selectedCategories.map((category, index) => (
-                <Box key={index} px={5} pt={3}>
+                <Box key={index} px={5} py={3} borderColor={colors.muted[300]} borderBottomWidth={1}>
                     <HStack alignItems='flex-start'>
                         <VStack w='75%'>
                             <Text color={colors.muted[500]} fontSize={18}>{category.name}</Text>
@@ -76,6 +88,7 @@ export default function NewRatingCategoryRatings({categories, ratings, back}) {
                         <Select.Item label={category.levelFour} value={4}/>
                         <Select.Item label={category.levelFive} value={5}/>
                     </Select>
+                    <Input mt={1} fontSize={15} p={3} value={category.comment} onChangeText={text => handleCommentChange(category, text)} placeholder='Add a comment (optional)'/>
                 </Box>
             ))}
             {unselectedCategories.length > 0 &&
@@ -97,7 +110,7 @@ export default function NewRatingCategoryRatings({categories, ratings, back}) {
                         <Text>Back</Text>
                     </HStack>
                 </Button>
-                <Button size='lg' isDisabled={selectedCategories.some(c => !c.rating)} style={{borderRadius: 100}}>
+                <Button onPress={() => next(selectedCategories)} size='lg' isDisabled={selectedCategories.some(c => !c.rating)} style={{borderRadius: 100}}>
                     <HStack alignItems='center' space={1}>
                         <Text>Next</Text>
                         <ArrowForwardIcon size={5}/>

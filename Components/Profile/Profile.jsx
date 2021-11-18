@@ -189,7 +189,7 @@ export default function Profile(props) {
                 {noMore && <Text textAlign='center' color={colors.muted[500]} fontSize={15} mt={0}>All results loaded.</Text>}
                 <Box h={7}></Box>
             </ScrollView>
-            <NewRatingButton show={showNewRatingButton} go={() => props.navigation.navigate('New Rating')}/>
+            <NewRatingButton show={showNewRatingButton} go={() => props.navigation.navigate('New Rating', {})}/>
         </View>
     )
 }

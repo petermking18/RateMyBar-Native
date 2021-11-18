@@ -224,7 +224,7 @@ export default function User(props) {
                 <Box p={5}><Text textAlign='center' alignItems='center' fontSize={16} color={colors.muted[500]}><MaterialIcons name='lock'/> This user is private.</Text></Box>
                 }
             </ScrollView>
-            <NewRatingButton show={showNewRatingButton} go={() => nav.navigate('New Rating')}/>
+            <NewRatingButton show={showNewRatingButton} go={() => nav.navigate('New Rating', {})}/>
         </View>
     )
 }

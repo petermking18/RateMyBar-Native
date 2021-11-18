@@ -33,7 +33,10 @@ export default function Rating(props) {
                     onPress: () => {
                         api.profile.deleteRating(props.token.id, props.token.token, ratingID, props.location.lat, props.location.lng, 0, 0)
                         .then(response => {
-                            props.route.params.onDeleted(ratingID);
+                            if (props.route.params.onDeleted) {
+                                props.route.params.onDeleted(ratingID);
+                            }
+                            setError('Rating deleted.');
                             navigation.goBack();
                         })
                     }

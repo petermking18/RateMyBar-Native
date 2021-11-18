@@ -58,7 +58,14 @@ export default class Ratings {
         .then(async (response) => {
           const postUrls = response.data.postUrls;
           for (let i = 0; i < photos.length; i++) {
-            await postReviewPhoto(postUrls[i], photos[i]);
+            //await postReviewPhoto(postUrls[i], photos[i]);
+            await fetch(postUrls[i], {
+              method: "PUT",
+              body: photos[i].blob,
+              headers: {
+                "Content-Type": "image/jpg",
+              },
+            });
           }
           resolve({ review: response.data.review });
         })

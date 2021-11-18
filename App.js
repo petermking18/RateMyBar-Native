@@ -70,6 +70,25 @@ export default function App() {
   };
 
   useEffect(async () => {
+    // when notification received in foreground
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener(async (notification) => {
+        handleNotificationReceived(notification);
+        // alert("received");
+      });
+
+    // when user taps a notification in foreground, background, or app is closed
+    responseListener.current =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        handleNotificationInteraction(notification);
+        // alert("responded");
+      });
+
+    // Register for push notifications
+    registerForPushNotificationsAsync().then((token) =>
+      setExpoPushToken(token)
+    );
+
     const tokenString = await SecureStore.getItemAsync("currentUser");
     if (tokenString) {
       const userToken = JSON.parse(tokenString);
@@ -90,25 +109,6 @@ export default function App() {
     } else {
       setLoading(false);
     }
-
-    // Register for push notifications
-    registerForPushNotificationsAsync().then((token) =>
-      setExpoPushToken(token)
-    );
-
-    // when notification received in foreground
-    notificationListener.current =
-      Notifications.addNotificationReceivedListener(async (notification) => {
-        handleNotificationReceived(notification);
-        // alert("received");
-      });
-
-    // when user taps a notification in foreground, background, or app is closed
-    responseListener.current =
-      Notifications.addNotificationResponseReceivedListener((response) => {
-        handleNotificationInteraction(notification);
-        // alert("responded");
-      });
 
     return () => {
       Notifications.removeNotificationSubscription(

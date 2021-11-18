@@ -34,7 +34,7 @@
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "serverIP": "http://13.59.72.172/:3050/"
+      "serverIP": "http://3.143.49.243:3050/"
     }
   }
 }

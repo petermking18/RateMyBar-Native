@@ -4,7 +4,7 @@ import {Button, useTheme, HStack, Text} from 'native-base';
 import {MaterialIcons} from '@expo/vector-icons';
 import { styles } from 'styled-system';
 
-export default function NewRatingButton({show, go}) {
+export default function NewRatingButton({show, go, ...props}) {
     const {colors} = useTheme();
     const styles = getStyles(colors);
     const [bounceValue, setBounceValue] = useState(new Animated.Value(100));
@@ -23,7 +23,7 @@ export default function NewRatingButton({show, go}) {
         ).start();
     }, [show]);
 
-    return <Animated.View style={[styles.AnimatedView, {transform: [{translateY: bounceValue}]}]}><Button onPress={go} shadow={1} style={{borderRadius: 100}}><HStack alignItems='center' space={0}><MaterialIcons size={30} color='white' name='add'/><Text fontSize={20} color='white'>New Rating</Text></HStack></Button></Animated.View>
+    return <Animated.View style={[styles.AnimatedView, {transform: [{translateY: bounceValue}]}]}><Button onPress={go} shadow={1} style={{borderRadius: 100}}><HStack alignItems='center' space={0}><MaterialIcons size={30} color='white' name='add'/><Text fontSize={20} color='white'>{props.text ? props.text : 'New Rating'}</Text></HStack></Button></Animated.View>
 }
 
 const getStyles = (color) => StyleSheet.create({

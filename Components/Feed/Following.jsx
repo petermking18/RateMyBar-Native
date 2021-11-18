@@ -117,7 +117,7 @@ export default function Following({radius, sortBy, token, location, parentNav, .
                 {noMore && <Text textAlign='center' color={colors.muted[500]} fontSize={15} mt={0}>All results loaded.</Text>}
                 <Box h={7}></Box>
             </ScrollView>
-            <NewRatingButton show={showNewRatingButton} go={() => parentNav.navigate('New Rating')} />
+            <NewRatingButton show={showNewRatingButton} go={() => parentNav.navigate('New Rating', {})} />
         </View>
     )
 }
