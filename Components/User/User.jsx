@@ -174,7 +174,7 @@ export default function User(props) {
                         <HStack space={4} alignItems='center'>
                             <FollowView users={followers} title='Followers' goToUser={(userID) => nav.navigate('User', {userID})}/>
                             <FollowView users={following} title='Following' goToUser={(userID) => nav.navigate('User', {userID})}/>
-                            <Button size='sm' colorScheme={getFollowButton().colorScheme} onPress={followButtonPress} variant='outline' marginLeft='auto' mt={3}>{getFollowButton().text}</Button>
+                            {props.token.id !== 21 && <Button size='sm' colorScheme={getFollowButton().colorScheme} onPress={followButtonPress} variant='outline' marginLeft='auto' mt={3}>{getFollowButton().text}</Button>}
                         </HStack>
                     </View>
                     :
@@ -224,7 +224,7 @@ export default function User(props) {
                 <Box p={5}><Text textAlign='center' alignItems='center' fontSize={16} color={colors.muted[500]}><MaterialIcons name='lock'/> This user is private.</Text></Box>
                 }
             </ScrollView>
-            <NewRatingButton show={showNewRatingButton} go={() => nav.navigate('New Rating', {})}/>
+            {props.token.id !== 21 && <NewRatingButton show={showNewRatingButton} go={() => nav.navigate('New Rating', {})}/>}
         </View>
     )
 }

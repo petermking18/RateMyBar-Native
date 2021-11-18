@@ -11,7 +11,7 @@ import Nearby from './Nearby';
 import Following from './Following';
 
 const Tab = createMaterialTopTabNavigator();
-
+const vw = Dimensions.get('window').width;
 export default function Feed(props) {
     const feedProps = props;
     const {colors} = useTheme();
@@ -27,7 +27,7 @@ export default function Feed(props) {
                 radius={radius} setRadius={(v) => setRadius(v)} 
                 sortBy={sortBy} setSortBy={setSortBy}
             />
-        })
+        });
     }, [view, radius, sortBy]);
 
 
@@ -45,11 +45,11 @@ export default function Feed(props) {
                     }
                 }}
             >
-                <Tab.Screen name="Following">
+                {feedProps.token.id !== 21 && <Tab.Screen name="Following">
                     {(props) => (
                         <Following {...props} radius={radius} sortBy={sortBy} token={feedProps.token} parentNav={nav} location={feedProps.location}/>
                     )}
-                </Tab.Screen>
+                </Tab.Screen>}
                 <Tab.Screen name="Nearby">
                     {(props) => (
                         <Nearby {...props} radius={radius} sortBy={sortBy} token={feedProps.token} parentNav={nav} location={feedProps.location}/>

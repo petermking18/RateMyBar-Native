@@ -37,9 +37,18 @@ export default function Login({setToken, expoPushToken}) {
     }
 
     const handleRegister = async (username, email, name, school, dob, phone, password, privacy) => {
-        const newUser = {username, email, name, school, dob, phone, password, privacy};
+        const newUser = {username, email, name, school, dob, phone: '', password, privacy};
         const user = await api.auth.register(newUser);
-        const userToken = new UserToken(user.userID, user.username, user.name, user.school, user.email, user.authToken);
+        const userToken = new UserToken(user.userID, user.username, user.name, user.school, user.email, user.mobileAuthToken);
+        setToken(userToken);
+    }
+
+    const loginAsGuest = () => {
+        // api.auth.login('Guest', 'guest12345', '').then(user => {
+        //     const userToken = new UserToken(user.userID, user.username, user.name, user.school, user.email, user.AuthToken);
+        //     setToken(userToken);
+        // })
+        const userToken = new UserToken(21, 'Guest', 'Guest', 'USA', 'guest@t.com', 'guest12345');
         setToken(userToken);
     }
 
@@ -61,7 +70,8 @@ export default function Login({setToken, expoPushToken}) {
                                 <Input fontSize={25} mb={2} ref={r => passwordRef = r} variant='underlined' value={password} placeholder='Password' type='password' returnKeyType='go' onSubmitEditing={() => handleLogin()} onChangeText={text => setPassword(text)}/>
                                 {loginError.length > 0 && <Text fontSize='lg' style={{color: 'red'}}>{loginError}</Text>}
                                 <Button colorScheme="primary" style={styles.button} size="lg" mb='2' isDisabled={!valid()} onPress={() => handleLogin()}>Login</Button>
-                                <Button colorScheme='primary' style={styles.button} variant='outline' size='lg' onPress={() => props.navigation.navigate('Register')}>Register</Button>
+                                <Button colorScheme='primary' style={styles.button} mb='2' variant='outline' size='lg' onPress={() => props.navigation.navigate('Register')}>Register</Button>
+                                <Button colorScheme='primary' style={styles.button} variant='outline' size='lg' onPress={() => loginAsGuest()}>Use as guest</Button>
                             </VStack>
                         </KeyboardAvoidingView>
                     </Center>
@@ -145,7 +155,7 @@ function RegisterForm({handleRegister, ...props}) {
     useEffect(() => {
         if (school === null) return;
         if (school.length === 0) {
-            setSchoolError('School cannot be blank');
+            setSchoolError('City cannot be blank');
         } else {
             setSchoolError('');
         }
@@ -203,7 +213,7 @@ function RegisterForm({handleRegister, ...props}) {
     }, [confirmPassword, password]);
 
     const formInvalid = () => {
-        const fields = [username, name, school, email, phone, password, confirmPassword];
+        const fields = [username, name, school, email, password, confirmPassword];
         if (fields.some(f => f === null)) return true;
         if (!dobChanged) return true;
         const errorFields = [usernameError, nameError, schoolError, dobError, emailError, phoneError, passwordError, confirmPasswordError];
@@ -222,12 +232,12 @@ function RegisterForm({handleRegister, ...props}) {
                             <Text style={styles.error}>{usernameError}</Text>
                             <Input style={styles.input} ref={r => nameRef = r} variant='underlined' value={name} placeholder='Name' type='name' returnKeyType='next' onSubmitEditing={() => {schoolRef.focus()}} onChangeText={text => setName(text)}/>
                             <Text style={styles.error}>{nameError}</Text>
-                            <Input style={styles.input} ref={r => schoolRef = r} variant='underlined' value={school} placeholder='School' returnKeyType='next' onSubmitEditing={() => emailRef.focus()} onChangeText={text => setSchool(text)}/>
+                            <Input style={styles.input} ref={r => schoolRef = r} variant='underlined' value={school} placeholder='City' returnKeyType='next' onSubmitEditing={() => emailRef.focus()} onChangeText={text => setSchool(text)}/>
                             <Text style={styles.error}>{schoolError}</Text>
-                            <Input style={styles.input} ref={r => emailRef = r} variant='underlined' value={email} placeholder='Email' returnKeyType='next' onSubmitEditing={() => phoneRef.focus()}type='email' keyboardType='email-address' onChangeText={text => setEmail(text)}/>
+                            <Input style={styles.input} ref={r => emailRef = r} variant='underlined' value={email} placeholder='Email' returnKeyType='next' onSubmitEditing={() => passwordRef.focus()}type='email' keyboardType='email-address' onChangeText={text => setEmail(text)}/>
                             <Text style={styles.error}>{emailError}</Text>
-                            <Input style={styles.input} ref={r => phoneRef = r} variant='underlined' value={phone} placeholder='Phone number' type='tel' keyboardType='phone-pad' returnKeyType='next' onSubmitEditing={() => passwordRef.focus()} onChangeText={text => setPhone(text)}/>
-                            <Text style={styles.error}>{phoneError}</Text>
+                            {/* <Input style={styles.input} ref={r => phoneRef = r} variant='underlined' value={phone} placeholder='Phone number' type='tel' keyboardType='phone-pad' returnKeyType='next' onSubmitEditing={() => passwordRef.focus()} onChangeText={text => setPhone(text)}/> */}
+                            {/* <Text style={styles.error}>{phoneError}</Text> */}
                             <Input style={styles.input} ref={r => passwordRef = r} variant='underlined' value={password} placeholder='Password' type='password' returnKeyType='next' onSubmitEditing={() => confirmPasswordRef.focus()} onChangeText={text => setPassword(text)}/>
                             <Text style={styles.error}>{passwordError}</Text>
                             <Input style={styles.input} ref={r => confirmPasswordRef = r} variant='underlined' value={confirmPassword} placeholder='Confirm password' type='password' returnKeyType='done' onChangeText={text => setConfirmPassword(text)}/>

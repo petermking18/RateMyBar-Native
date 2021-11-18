@@ -118,7 +118,7 @@ export default function Nearby({radius, sortBy, token, location, parentNav, ...p
                 {noMore && <Text textAlign='center' color={colors.muted[500]} fontSize={15} mt={0}>All results loaded.</Text>}
                 <Box h={7}></Box>
             </ScrollView>
-            <NewRatingButton show={showNewRatingButton} go={() => parentNav.navigate('New Rating', {})} />
+            {token.id !== 21 && <NewRatingButton show={showNewRatingButton} go={() => parentNav.navigate('New Rating', {})} />}
         </View>
     )
 }

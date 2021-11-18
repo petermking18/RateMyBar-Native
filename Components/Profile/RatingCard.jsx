@@ -133,7 +133,6 @@ export default function RatingCard({rating, token, handleDelete, openUser, openR
                         {rating.distance &&
                         <Text ml='auto' fontSize={30} fontWeight={300} color={colors.muted[400]}>{parseInt(rating.distance)}<Text fontSize={15} fontWeight={400} color={colors.muted[400]}>mi</Text></Text>
                         }
-                        {!rating.user && <Text ml='auto' color={colors.muted[500]}>{moment(rating.dateReviewed).fromNow()}</Text>}
                 </HStack>
                 </Pressable>
                 {!(props.showUser === false) && rating.user &&
@@ -189,7 +188,7 @@ export default function RatingCard({rating, token, handleDelete, openUser, openR
                             </Actionsheet.Item>
                         ))} */}
                     <Actionsheet.Item justifyContent='center' onPress={() => setShowCommentModal(true)}>
-                        <Text fontSize={17} mt='auto' color={colors.muted[700]}>Add a comment</Text>
+                        {token.id !== 21 && <Text fontSize={17} mt='auto' color={colors.muted[700]}>Add a comment</Text>}
                     </Actionsheet.Item>
                 </Actionsheet.Content>
             </Actionsheet>

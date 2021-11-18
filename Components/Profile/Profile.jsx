@@ -144,7 +144,7 @@ export default function Profile(props) {
                         <HStack space={4} alignItems='center'>
                             <FollowView users={followers} title='Followers' goToUser={(userID) => props.navigation.navigate('User', {userID: userID})}/>
                             <FollowView users={following} title='Following' goToUser={(userID) => props.navigation.navigate('User', {userID: userID})}/>
-                            <Button colorScheme='rmb' size='sm' variant='outline' marginLeft='auto' mt={3}>Edit Profile</Button>
+                            {/* <Button colorScheme='rmb' size='sm' variant='outline' marginLeft='auto' mt={3}>Edit Profile</Button> */}
                         </HStack>
                     </View>
                     :

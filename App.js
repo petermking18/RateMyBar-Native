@@ -272,22 +272,30 @@ export default function App() {
                         <Search {...props} token={token} location={location} />
                       )}
                     </Drawers.Screen>
-                    <Drawers.Screen name="Profile">
-                      {(props) => (
-                        <Profile {...props} location={location} token={token} />
-                      )}
-                    </Drawers.Screen>
-                    <Drawers.Screen name="Activity">
-                      {(props) => (
-                        <Activity
-                          {...props}
-                          location={location}
-                          token={token}
-                          decrementBadgeCount={decrementBadgeCount}
-                          onNewNotification={onNewNotification}
-                        />
-                      )}
-                    </Drawers.Screen>
+                    {token.id !== 21 && (
+                      <Drawers.Screen name="Profile">
+                        {(props) => (
+                          <Profile
+                            {...props}
+                            location={location}
+                            token={token}
+                          />
+                        )}
+                      </Drawers.Screen>
+                    )}
+                    {token.id !== 21 && (
+                      <Drawers.Screen name="Activity">
+                        {(props) => (
+                          <Activity
+                            {...props}
+                            location={location}
+                            token={token}
+                            decrementBadgeCount={decrementBadgeCount}
+                            onNewNotification={onNewNotification}
+                          />
+                        )}
+                      </Drawers.Screen>
+                    )}
                   </Drawers.Navigator>
                 )}
               </AppStack.Screen>

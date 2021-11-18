@@ -28,10 +28,16 @@ export default function Bar(props) {
             } else {
                 setBarInfo(response.barInfo);
                 setTags(response.tags);
-                nav.setOptions({
-                    headerTitle: response.barInfo.name,
-                    headerRight: () => <Button size='lg' onPress={() => nav.navigate('New Rating', {barID: props.route.params.barID})}>Rate bar</Button>
-                });
+                if (props.token.id !== 21) {
+                    nav.setOptions({
+                        headerTitle: response.barInfo.name,
+                        headerRight: () => <Button size='lg' onPress={() => nav.navigate('New Rating', {barID: props.route.params.barID})}>Rate bar</Button>
+                    });
+                } else {
+                    nav.setOptions({
+                        headerTitle: response.barInfo.name
+                    })
+                }
             }
             setLoading(false);
         })
@@ -87,7 +93,7 @@ export default function Bar(props) {
                                         <Text color={colors.muted[400]} textAlign='center'>This bar has no tags yet.</Text>
                                         }
                                     </Box>
-                                    {barInfo.name && <Button onPress={() => nav.navigate('New Rating', {barID: barProps.route.params.barID})} borderRadius={100} size='lg' m={5}><HStack alignItems='center' space={1}><MaterialIcons /*color='white'*/ name='add' size={20}/><Text /*color='white'*/ fontSize={20}>Rate {barInfo.name}</Text></HStack></Button>}
+                                    {barInfo.name && barProps.token.id !== 21 && <Button onPress={() => nav.navigate('New Rating', {barID: barProps.route.params.barID})} borderRadius={100} size='lg' m={5}><HStack alignItems='center' space={1}><MaterialIcons /*color='white'*/ name='add' size={20}/><Text /*color='white'*/ fontSize={20}>Rate {barInfo.name}</Text></HStack></Button>}
                                     <Box h={10}></Box>
                                 </ScrollView>
                                 }

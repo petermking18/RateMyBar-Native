@@ -2,7 +2,7 @@
   "expo": {
     "name": "RateMyBar",
     "slug": "RateMyBar",
-    "version": "1.0.1",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -22,7 +22,11 @@
         "googleMapsApiKey": "AIzaSyBsaD5GJs_T4kK1HeYPKDIQToV-FpZDHSY"
       },
       "bundleIdentifier": "com.peterkingdev.ratemybar",
-      "buildNumber": "1.0.1"
+      "buildNumber": "1.0.3",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "RateMyBar needs your location to determine which bars are near you. Your location is not stored outside the app.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "RateMyBar needs your location to determine which bars are near you. Your location is not stored outside the app."
+      }
     },
     "android": {
       "adaptiveIcon": {
