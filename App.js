@@ -186,11 +186,15 @@ export default function App() {
           label="Logout"
           labelStyle={{ fontSize: 20 }}
           activeTintColor={theme.colors.primary["500"]}
-          onPress={() =>
-            api.auth.logout(token).then(() => {
+          onPress={() => {
+            if (token.id === 21) {
               clearToken();
-            })
-          }
+            } else {
+              api.auth.logout(token).then(() => {
+                clearToken();
+              });
+            }
+          }}
         />
       </DrawerContentScrollView>
     );
