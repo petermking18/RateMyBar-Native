@@ -19,7 +19,7 @@
     "ios": {
       "supportsTablet": true,
       "config": {
-        "googleMapsApiKey": "AIzaSyBsaD5GJs_T4kK1HeYPKDIQToV-FpZDHSY"
+        "googleMapsApiKey": "?"
       },
       "bundleIdentifier": "com.peterkingdev.ratemybar",
       "buildNumber": "1.0.6",
